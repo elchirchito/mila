@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Milanesa Clicker</title>
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f8f8f8;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        #clicker-container {
+            text-align: center;
+            background-color: #ffecd8;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        #milanesa-image {
+            width: 100%;
+            max-width: 200px;
+            height: auto;
+            margin-top: 20px;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+        }
+
+        #counter {
+            font-size: 36px;
+            margin-top: 10px;
+            color: #ff7f50;
+        }
+
+        #clickButton,
+        #boostButton {
+            font-size: 18px;
+            padding: 12px 24px;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease;
+            margin-top: 20px;
+            width: 100%;
+            transition: all 0,3s;
+        }
+
+        #clickButton:hover,
+        #boostButton:hover {
+            background-color: #ff6347;
+        }
+
+        h1 {
+            color: #ff6347;
+            margin: 0;
+        }
+
+        .mini-milanesa {
+            position: absolute;
+            width: 30px;
+            height: auto;
+            pointer-events: none;
+            animation: fall 3s ease-in-out;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh);
+                opacity: 0;
+            }
+        }
+
+        #progress-bar-container {
+            width: 100%;
+            height: 10px;
+            background-color: black;
+            border-radius: 5px;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+        }
+
+        #progress-bar {
+            height: 100%;
+            background-color: #4CAF50;
+            border-radius: 5px;
+            width: 0;
+            transition: width 0.3s ease;
+        }
+
+        #fireworks-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .firework {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background-color: #ff6347;
+            border-radius: 50%;
+            transform-origin: center bottom;
+            animation: explode 1s ease-out;
+        }
+
+        @keyframes explode {
+            0% {
+                transform: scaleY(0) scaleX(1);
+            }
+            100% {
+                transform: scaleY(1) scaleX(1);
+            }
+        }
+
+        #nameInput {
+            font-size: 16px;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 70%;
+            box-sizing: border-box;
+        }
+
+        #saveButton {
+            font-size: 16px;
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            background-color: #4CAF50;
+            color: white;
+            transition: background-color 0.3s ease;
+            margin-top: 10px;
+        }
+
+        #saveButton:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="clicker-container">
+        <h3>by elchirchito</h3>
+        <h1>Milanesa Clicker</h1>
+        <img src="mila-removebg-preview.png" alt="mila" id="milanesa-image">
+        <p id="counter">0</p>
+        <button id="clickButton" onclick="handleClick()">¡Hacer clic!</button>
+        <button id="boostButton" onclick="activateBoost()">Potenciador (30 clics)</button>
+        <div id="progress-bar-container">
+            <div id="progress-bar"></div>
+        </div>
+        
+
+    <script>
+        let count = 0;
+        let boostActive = false;
+        let progressBar = document.getElementById("progress-bar");
+
+        function handleClick() {
+            count += boostActive ? 2 : 1;
+
+            // click 100 x2
+            if (count >= 100) {
+                count++;
+            }
+
+            document.getElementById("counter").innerText = count;
+
+            
+            generateMiniMilanesa();
+
+            
+            updateProgressBar();
+
+            if (count === 500) {
+                showFireworks();
+            }
+
+            if (count === 1000) {
+                count = 0;
+                updateProgressBar();
+            }
+        }
+
+        function activateBoost() {
+            if (count >= 30 && !boostActive) {
+                count -= 30;
+                boostActive = true;
+
+                setTimeout(() => {
+                    boostActive = false;
+                }, 10000);
+
+                function autoIncrement() {
+                    if (boostActive) {
+                        handleClick();
+                        setTimeout(autoIncrement, 3000);
+                    }
+                }
+
+                autoIncrement();
+            }
+        }
+
+        function generateMiniMilanesa() {
+            const miniMilanesa = document.createElement("img");
+            miniMilanesa.src = "mila-removebg-preview.png";
+            miniMilanesa.classList.add("mini-milanesa");
+
+            
+            miniMilanesa.style.left = `${Math.random() * document.getElementById("clicker-container").offsetWidth}px`;
+            miniMilanesa.style.top = `0`;
+
+           
+            if (Math.random() > 0.5) {
+                miniMilanesa.classList.add("mirror-effect");
+            }
+
+            document.getElementById("clicker-container").appendChild(miniMilanesa);
+
+            
+            setTimeout(() => {
+                miniMilanesa.style.opacity = 0;
+            }, 2000); 
+        }
+
+        function updateProgressBar() {
+            const progress = (count / 500) * 100;
+            progressBar.style.width = `${progress}%`;
+        }
+
+        function showFireworks() {
+            const fireworksContainer = document.getElementById("fireworks-container");
+
+            for (let i = 0; i < 30; i++) {
+                const firework = document.createElement("div");
+                firework.classList.add("firework");
+                firework.style.left = `${Math.random() * 100}%`;
+                fireworksContainer.appendChild(firework);
+            }
+
+            
+            setTimeout(() => {
+                fireworksContainer.innerHTML = "";
+            }, 2000);
+        }
+
+        
+        function saveClics() {
+            const name = document.getElementById("nameInput").value;
+
+          
+            if (!name) {
+                alert("Por favor, ingresa tu nombre.");
+                return;
+            }
+
+           
+            const savedData = JSON.parse(localStorage.getItem('savedData')) || {};
+
+            
+            savedData[name] = savedData[name] || 0;
+
+          
+            savedData[name] += count;
+
+            
+            localStorage.setItem('savedData', JSON.stringify(savedData));
+
+            alert(`¡Clics de ${name} guardados!`);
+        }
+    </script>
+
+</body>
+
+</html>
